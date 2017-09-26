@@ -7,5 +7,7 @@ response.xpath('.//*[contains(@class,"js-stream-item stream-item stream
 
 
 #query to search tweets
+https://twitter.com/search?l=&q=from:realDonaldTrump since:2016-09-01 until:2017-09-26&src=typd
 
-https://twitter.com/search?l=&q=from:realDonaldTrump since:2017-09-01 until:2017-09-26&src=typd&lang=fr
+#run the spider
+scrapy crawl trumpSpider -a profileName=realDonaldTrump -a since=2016-09-01 -a until=2017-09-26
