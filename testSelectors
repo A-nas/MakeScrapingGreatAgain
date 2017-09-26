@@ -1,0 +1,11 @@
+# replys
+response.xpath('.//*[contains(@class,"js-stream-item stream-item stream
+     ...: -item")]/div[1]/div[2]/div[contains(@class,"stream-item-footer")]/div[c
+     ...: ontains(@class,"ProfileTweet-actionCountList u-hiddenVisually")]/span[c
+     ...: ontains(@class,"ProfileTweet-action--reply u-hiddenVisually")]/span[1]/
+     ...: @data-tweet-stat-count').extract()
+
+
+#query to search tweets
+
+https://twitter.com/search?l=&q=from:realDonaldTrump since:2017-09-01 until:2017-09-26&src=typd&lang=fr
