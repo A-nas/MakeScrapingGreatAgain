@@ -11,3 +11,6 @@ https://twitter.com/search?l=&q=from:realDonaldTrump since:2016-09-01 until:2017
 
 #run the spider
 scrapy crawl trumpSpider -a profileName=realDonaldTrump -a since=2016-09-01 -a until=2017-09-26
+
+#tweets
+.//*[contains(@class,'js-stream-item stream-item stream-item')]/div[1]/div[2]/div[2]/p
