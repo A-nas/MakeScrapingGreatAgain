@@ -21,6 +21,7 @@ class TrumpspiderSpider(Spider):
 
         tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
         tweetdates = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract();
+        
         yield {
          'comments' : comments_react,
          'retweets' : retweet_react,
