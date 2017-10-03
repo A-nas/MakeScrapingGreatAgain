@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'makeScrapingGreatAgain.spiders'
 #USER_AGENT = 'makeScrapingGreatAgain (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False #yup Rebel Mode Activated xD
+ROBOTSTXT_OBEY = False #yup Rebel Mode Activated :)
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32

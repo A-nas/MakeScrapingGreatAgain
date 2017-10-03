@@ -17,3 +17,11 @@ scrapy crawl trumpSpider -a profileName=realDonaldTrump -a since=2016-09-01 -a u
 
 
 
+curl 'https://twitter.com/i/profiles/show/realDonaldTrump/timeline/tweets?include_available_features=1&include_entities=1&max_position=912019957243883520&reset_error_state=false' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: en-US,en;q=0.5' -H 'Connection: keep-alive' -H 'Cookie: personalization_id="v1_AxNAd+cMYAuU4SmQcsKBlw=="; guest_id=v1%3A150592161834956482; _ga=GA1.2.1438276811.1506337821; _gid=GA1.2.644623859.1506337821; eu_cn=1; kdt=Jtqd64V6rkpRKrALlMD8S0PXa4B93rSU9idtTb0E; remember_checked_on=1; external_referer=padhuUp37zjgzgv1mFWxJ6rT2MjCER7r|0|8e8t2xd8A2w%3D; ads_prefs="HBERAAA="; twid="u=3462555082"; auth_token=f415a8976fe683be29fbbef3bbce3855b92a8c16; tip_nightmode=true; ct0=1bf63c7746e9ff1c73b512fd718c25f5; _twitter_sess=BAh7CSIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoPY3JlYXRlZF9hdGwrCAQFIcNeAToMY3NyZl9p%250AZCIlNjVjYmVmZTk4MzkyNmRkNjIzNzUxNWQ2MTkwZDQ3ODY6B2lkIiViZmJi%250AMWM2YWFmM2Y2MDVhZjNiMDMyNTlhZDdmNmFhNg%253D%253D--d15fd66c71bb129056ca0035761357d2c217432c; lang=fr' -H 'Host: twitter.com' -H 'Referer: https://twitter.com/realDonaldTrump/' -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0' -H 'X-Requested-With: XMLHttpRequest' -H 'X-Twitter-Active-User: yes'
+
+
+
+include_available_features=1
+include_entities=1
+max_position=912019957243883520
+reset_error_state=false
