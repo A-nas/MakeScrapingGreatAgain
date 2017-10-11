@@ -64,9 +64,15 @@ ROBOTSTXT_OBEY = False #yup Rebel Mode Activated :)
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'makeScrapingGreatAgain.pipelines.MakescrapinggreatagainPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    #'makeScrapingGreatAgain.pipelines.MakescrapinggreatagainPipeline': 300,
+    'makeScrapingGreatAgain.pipelines.MongoDBPipeline': 300,
+}
+# SOME SETTING ADDED BY ME
+MONGODB_SERVER = 'localhost'
+MONGODB_PORT = 27017
+MONGODB_DB = 'paperman'
+MONGODB_COLLECTION = 'course'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
