@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from scrapy import Spider
 from scrapy import FormRequest
+from scrapy import Selector
 from scrapy.http import Request # for yelding a request
 from time import sleep
 from urllib import urlencode
 import logging
-
+import json
 
 
 class TrumpspiderSpider(Spider):
@@ -25,16 +26,16 @@ class TrumpspiderSpider(Spider):
         self.since = since
         self.until = until
         self.query = 'from:'+self.profileName+' since:'+ self.since +' until:'+ self.until +'&src=typd'
-        self start_urlsGetParams = {
+        self.start_urlsGetParams = {
         'l':'',
         'q':self.query
         }
-
+        #overrided
         self.allowed_domains = ['https://twitter.com/'+self.profileName]
         self.tweetAPIGetParams = ['https://twitter.com/i/profiles/show/'+self.profileName+'/timeline/tweets']
 
-    	self.start_urls = ['https://twitter.com/search?'+urlencode(start_urlsGetParams)]
-        logging('INCOMMIIIIIIIIIING!! ===> 'self.start_urls[0])
+    	self.start_urls = ['https://twitter.com/search?'+urlencode(self.start_urlsGetParams)]
+        logging.info('warning call %s',self.start_urls[0])
 
     #overrided fucntion that prepare request with inner headers
     def start_requests(self):
@@ -51,30 +52,13 @@ class TrumpspiderSpider(Spider):
         return [FormRequest(self.start_urls[0],headers=params)]#default callback will be parse function   	
 
     def parse(self, response):
-        comments_react = self.stats_extractor('reply', response)
-        retweet_react = self.stats_extractor('retweet', response)
-        favorite_react = self.stats_extractor('favorite', response)
-        tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
-        tweetdates = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract();
-        #maxPosition = response.xpath();
-        yield {
-         'comments' : comments_react,
-         'retweets' : retweet_react,
-         'favorites' : favorite_react,
-         'teweets' : tweets,
-         'tweetDates' : tweetdates,
-        }
-
+        self.parse_data(response)
         #search for next iteration (min-position)
-        next_position = response.xpath('//*[@id="timeline"]/div/@data-min-position').extract()
-        params = { 
-        "action" : "search",
-        "description" : "My search here",
-        "e_author" : ""
-        }
-
+        next_position = response.xpath('//*[@id="timeline"]/div/@data-min-position').extract()[0].split('-')[1]
+        logging.info('Next Position ====> %s',next_position)
+        #GET parameters (no headers needed (for the moment))
         get_params = {
-        'q' : self.query
+        'q' : self.query,
         'include_available_features' : '1',
         'include_entities' : '1',
         'max_position' : next_position,
@@ -82,11 +66,29 @@ class TrumpspiderSpider(Spider):
         'src':'typd',
         'vertical':'default'
         }
-        yield Request(response.url, callback=self.parse_tweets)
+        sleep(10)
+        yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(get_params), callback=self.parse_json_tweets,dont_filter=True)
 
 
-    def parse_tweets():
-        pass
+    def parse_json_tweets(self, response):
+        data = json.loads(response.text)
+        selector = Selector(text=data['items_html'], type='html')
+        self.parse_data(reponse = selector)
+
+    def parse_data(self, response):
+        logging.info(' EXTRACTIONNN ====> %s',response.url)
+        comments_react = self.stats_extractor('reply', response)
+        retweet_react = self.stats_extractor('retweet', response)
+        favorite_react = self.stats_extractor('favorite', response)
+        tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
+        tweetdates = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract();
+        yield {
+         'comments' : comments_react,
+         'retweets' : retweet_react,
+         'favorites' : favorite_react,
+         'teweets' : tweets,
+         'tweetDates' : tweetdates,
+        }
 
     def stats_extractor(self, statsString, response):
         #make an enum for that (parameter)
