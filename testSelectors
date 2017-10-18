@@ -36,3 +36,15 @@ TWEET-913187235452690432-914269704440737792-BD1UO2FFu9QAAAAAAAAETAAAAAcAAAASAAAA
 
 dump request
 https://twitter.com/search?l=&q=from%3ArealDonaldTrump%20since%3A2017-10-01%20until%3A2017-10-11&src=typd&lang=fr
+
+
+
+GET collections/entries
+Retrieve the identified Collection, presented as a list of the Tweets curated within.
+The response structure of this method differs significantly from timelines you may be 
+used to working with in the Twitter REST API.
+To navigate a Collection, use the position object of a response, 
+which includes attributes for max_position, min_position, and was_truncated. 
+was_truncated indicates whether additional Tweets exist in the collection outside of the 
+range of the current request. To retrieve Tweets further back in time, use the value of 
+min_position found in the current response as the max_position parameter in your next call to this endpoint.

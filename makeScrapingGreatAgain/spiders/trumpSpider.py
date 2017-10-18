@@ -2,20 +2,41 @@
 from scrapy import Spider
 from scrapy import FormRequest
 from scrapy.http import Request # for yelding a request
+from time import sleep
+from urllib import urlencode
 import logging
 
 
+
 class TrumpspiderSpider(Spider):
+    #overrided properties
     name = 'trumpSpider'
-    allowed_domains = ['https://twitter.com/realDonaldTrump']
+    #class properties
+    tweetAPIGetParams = None
+    profileName = None
+    since = None
+    until = None
+    query = None
+    #computd properties
+    start_urlsGetParams = None
 
+    def __init__(self, profileName, since, until):
+        self.profileName = profileName
+        self.since = since
+        self.until = until
+        self.query = 'from:'+self.profileName+' since:'+ self.since +' until:'+ self.until +'&src=typd'
+        self start_urlsGetParams = {
+        'l':'',
+        'q':self.query
+        }
 
-    def __init__(self, profileName, since, until): # date should be formated as follow yyyy-mm-dd
-    	self.start_urls = ['https://twitter.com/search?l=&q=from:'+profileName+
-                           ' since:'+ since +
-                           ' until:'+ until +'&src=typd']
+        self.allowed_domains = ['https://twitter.com/'+self.profileName]
+        self.tweetAPIGetParams = ['https://twitter.com/i/profiles/show/'+self.profileName+'/timeline/tweets']
 
-    #URL headers
+    	self.start_urls = ['https://twitter.com/search?'+urlencode(start_urlsGetParams)]
+        logging('INCOMMIIIIIIIIIING!! ===> 'self.start_urls[0])
+
+    #overrided fucntion that prepare request with inner headers
     def start_requests(self):
         params = { 
         'Host':'twitter.com',
@@ -43,13 +64,29 @@ class TrumpspiderSpider(Spider):
          'teweets' : tweets,
          'tweetDates' : tweetdates,
         }
-        #search for next position
+
+        #search for next iteration (min-position)
+        next_position = response.xpath('//*[@id="timeline"]/div/@data-min-position').extract()
         params = { 
-        "action": "search",
-        "description": "My search here",
-        "e_author": ""
+        "action" : "search",
+        "description" : "My search here",
+        "e_author" : ""
+        }
+
+        get_params = {
+        'q' : self.query
+        'include_available_features' : '1',
+        'include_entities' : '1',
+        'max_position' : next_position,
+        'reset_error_state' : 'false',
+        'src':'typd',
+        'vertical':'default'
         }
         yield Request(response.url, callback=self.parse_tweets)
+
+
+    def parse_tweets():
+        pass
 
     def stats_extractor(self, statsString, response):
         #make an enum for that (parameter)
