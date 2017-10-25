@@ -21,6 +21,7 @@ class TrumpspiderSpider(Spider):
     last_position = None
     params = None
     cookies = None
+    get_params = None # api get params (for fetching new lists)
     API_Cookies = {
     'personalization_id' :'v1_AxNAd+cMYAuU4SmQcsKBlw==',
     'guest_id' :'v1%3A150592161834956482',
@@ -97,7 +98,7 @@ class TrumpspiderSpider(Spider):
         next_position = response.xpath('//*[@id="timeline"]/div/@data-max-position').extract_first().split('-')[1]
         last_position = response.xpath('//*[@id="timeline"]/div/@data-max-position').extract_first().split('-')[2]
         #GET parameters (no headers needed (for the moment))
-        get_params = {
+        self.get_params = {
         'q' : self.query,
         'include_available_features' : '1',
         'include_entities' : '1',
@@ -106,39 +107,41 @@ class TrumpspiderSpider(Spider):
         'vertical':'default'
         }
 
-        sleep(10)
-        logging.info('============================= IM HERE 1============================================= ')
-        yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
+        yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
 
 
     def parse_json_tweets(self, response):
-        logging.info('============================= IM HERE 2============================================= ')
-        data = json.loads(response.text)
-        logging.info('=========================+++> %s',data['new_latent_count'])
-        selector = Selector(text=data['items_html'], type='html')
-        #self.parse_data(selector) dont work
-        comments_react = self.stats_extractor('reply', selector)
-        retweet_react = self.stats_extractor('retweet', selector)
-        favorite_react = self.stats_extractor('favorite', selector)
-        tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
-        tweetdates = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
-        yield {
-         'comments' : comments_react,
-         'retweets' : retweet_react,
-         'favorites' : favorite_react,
-         'teweets' : tweets,
-         'tweetDates' : tweetdates,
-        }
-        #yield Request(response.url, callback=self.parse_data,dont_filter=True)
+        while(True):
+            data = json.loads(response.text)
+            selector = Selector(text=data['items_html'], type='html') # must use encode ? (careful here)
+            comments_react = self.stats_extractor('reply', selector)
+            retweet_react = self.stats_extractor('retweet', selector)
+            favorite_react = self.stats_extractor('favorite', selector)
+            tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
+            tweetdates = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
+            yield {
+             'comments' : comments_react,
+             'retweets' : retweet_react,
+             'favorites' : favorite_react,
+             'teweets' : tweets,
+             'tweetDates' : tweetdates,
+            }
+            nextPosition = data['min_position'].split('-')
+            nextPosition = 'TWEET-'+nextPosition[1] + '-' + nextPosition[2]
+            self.get_params['max_position'] = nextPosition
+            keepScroll = data['has_more_items'] 
+            sleep(10)
+            yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
+            if !keepScroll:
+                break
 
     def parse_data(self, response):
-        #logging.info(' EXTRACTIONNN ====> %s',response.url)
         comments_react = self.stats_extractor('reply', response)
         retweet_react = self.stats_extractor('retweet', response)
         favorite_react = self.stats_extractor('favorite', response)
         tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
         tweetdates = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
-        logging.info('============================= yelding ============================================= ')
+
         yield {
          'comments' : comments_react,
          'retweets' : retweet_react,
