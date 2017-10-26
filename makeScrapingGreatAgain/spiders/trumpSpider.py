@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import scrapy
 from scrapy import Spider
 from scrapy import FormRequest
 from scrapy import Selector
@@ -21,6 +22,7 @@ class TrumpspiderSpider(Spider):
     last_position = None
     params = None
     cookies = None
+    keepScroll = True
     get_params = None # api get params (for fetching new lists)
     API_Cookies = {
     'personalization_id' :'v1_AxNAd+cMYAuU4SmQcsKBlw==',
@@ -111,14 +113,16 @@ class TrumpspiderSpider(Spider):
 
 
     def parse_json_tweets(self, response):
-        while(True):
+        while(self.keepScroll):
             data = json.loads(response.text)
-            selector = Selector(text=data['items_html'], type='html') # must use encode ? (careful here)
+            selector = Selector(text=data['items_html'], type='html')
+            
             comments_react = self.stats_extractor('reply', selector)
             retweet_react = self.stats_extractor('retweet', selector)
             favorite_react = self.stats_extractor('favorite', selector)
             tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
             tweetdates = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
+            
             yield {
              'comments' : comments_react,
              'retweets' : retweet_react,
@@ -126,16 +130,18 @@ class TrumpspiderSpider(Spider):
              'teweets' : tweets,
              'tweetDates' : tweetdates,
             }
+            
             nextPosition = data['min_position'].split('-')
             nextPosition = 'TWEET-'+nextPosition[1] + '-' + nextPosition[2]
-            self.get_params['max_position'] = nextPosition
-            keepScroll = data['has_more_items'] 
-            sleep(10)
-            yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
-            if !keepScroll:
-                break
-
+            if(self.get_params['max_position'] != nextPosition):
+                logging.info('#################   %s  !=  %s',nextPosition,self.get_params['max_position'])
+                self.get_params['max_position'] = nextPosition
+                self.keepScroll = data['has_more_items']
+                logging.info(' Next position to process ===============>  %s \n',nextPosition)
+                sleep(20)
+                Request(self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
     def parse_data(self, response):
+        logging.info('im heeeeeeeeeeeeeeeeere <3')
         comments_react = self.stats_extractor('reply', response)
         retweet_react = self.stats_extractor('retweet', response)
         favorite_react = self.stats_extractor('favorite', response)
