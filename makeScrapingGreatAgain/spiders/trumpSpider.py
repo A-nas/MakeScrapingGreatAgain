@@ -6,7 +6,7 @@ from scrapy import Selector
 from scrapy.http import Request # for yelding a request
 from time import sleep
 from urllib import urlencode
-import logging
+#import logging
 import json
 
 #selector must be exported to config files
@@ -23,7 +23,6 @@ class TrumpspiderSpider(Spider):
     params = None
     cookies = None
     keepScroll = True
-    oldPosition = None
     get_params = None # api get params (for fetching new lists)
     API_Cookies = {
     'personalization_id' :'v1_AxNAd+cMYAuU4SmQcsKBlw==',
@@ -114,14 +113,13 @@ class TrumpspiderSpider(Spider):
 
 
     def parse_json_tweets(self, response):
-        while(True):
             #convert response
             data = json.loads(response.text)
             selector = Selector(text=data['items_html'], type='html')
             #extract data
             nextPosition = data['min_position'].split('-')
             nextPosition = 'TWEET-'+nextPosition[1] + '-' + nextPosition[2]
-            logging.info('next position to performe ====>  %s old position %s',nextPosition,self.oldPosition)
+            #logging.info('next position to performe ====>  %s old position %s',nextPosition,self.get_params['max_position'])
             if(self.get_params['max_position'] != nextPosition):
                 comments_react = self.stats_extractor('reply', selector)
                 retweet_react = self.stats_extractor('retweet', selector)
@@ -137,14 +135,13 @@ class TrumpspiderSpider(Spider):
                  'teweets' : tweets,
                  'tweetDates' : tweetdates,
                 }
-                #test wether condition returned same index or is not keepScroll
-                if(not self.keepScroll):
-                    break
                 self.get_params['max_position'] = nextPosition
-                self.keepScroll = data['has_more_items']
+                self.keepScroll = data['new_latent_count']
                 #call the new API with the nex parameters
-                logging.info('running url ==> %s', self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params))
-                self.oldPosition = nextPosition
+                #logging.info('running url ==> %s', self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params))
+                #test wether condition returned same index or is not keepScroll
+                if(self.keepScroll == 0):
+                    return
                 yield Request(self.tweetAPIGetParams[0]+'?'+urlencode(self.get_params), callback=self.parse_json_tweets,dont_filter=True,cookies=self.API_Cookies,headers=self.params)
 
     def parse_data(self, response):
