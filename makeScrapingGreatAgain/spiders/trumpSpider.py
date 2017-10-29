@@ -124,17 +124,21 @@ class TrumpspiderSpider(Spider):
                 comments_react = self.stats_extractor('reply', selector)
                 retweet_react = self.stats_extractor('retweet', selector)
                 favorite_react = self.stats_extractor('favorite', selector)
-                tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
                 tweetdates = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
-
-                #record data
-                yield {
-                 'comments' : comments_react,
-                 'retweets' : retweet_react,
-                 'favorites' : favorite_react,
-                 'teweets' : tweets,
-                 'tweetDates' : tweetdates,
-                }
+                #tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
+                brut_tweets = selector.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]//p').extract()
+                for key,value in enumerate(brut_tweets):
+                    brut_tweet = Selector(text=value.encode('utf-8'),type='html')
+                    current_tweet = ''.join(brut_tweet.xpath('//p//text()').extract())
+                    #record data
+                    yield {
+                     'comment' : comments_react[key],
+                     'retweet' : retweet_react[key],
+                     'favorite' : favorite_react[key],
+                     'teweet' : current_tweet,
+                     'tweetDate' : tweetdates[key],
+                    }
+                #seek for the next position
                 self.get_params['max_position'] = nextPosition
                 self.keepScroll = data['new_latent_count']
                 #call the new API with the nex parameters
@@ -148,16 +152,18 @@ class TrumpspiderSpider(Spider):
         comments_react = self.stats_extractor('reply', response)
         retweet_react = self.stats_extractor('retweet', response)
         favorite_react = self.stats_extractor('favorite', response)
-        tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]/p/text()').extract()
         tweetdates = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[1]/small/a/span[1]/text()').extract()
-
-        yield {
-         'comments' : comments_react,
-         'retweets' : retweet_react,
-         'favorites' : favorite_react,
-         'teweets' : tweets,
-         'tweetDates' : tweetdates,
-        }
+        brut_tweets = response.xpath('.//*[contains(@class,"js-stream-item stream-item stream-item")]/div[1]/div[2]/div[2]//p').extract()
+        for key,value in enumerate(brut_tweets):
+            brut_tweet = Selector(text=value.encode('utf-8'),type='html')
+            current_tweet = ''.join(brut_tweet.xpath('//p//text()').extract())
+            yield {
+             'comment' : comments_react[key],
+             'retweet' : retweet_react[key],
+             'favorite' : favorite_react[key],
+             'teweet' : current_tweet,
+             'tweetDate' : tweetdates[key],
+            }
 
     def stats_extractor(self, statsString, response):
         #make an enum for that (parameter)
