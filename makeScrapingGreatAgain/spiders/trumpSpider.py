@@ -6,8 +6,9 @@ from scrapy import Selector
 from scrapy.http import Request # for yelding a request
 from time import sleep
 from urllib import urlencode
-#import logging
+import logging
 import json
+from scrapy.conf import settings
 
 #selector must be exported to config files
 class TrumpspiderSpider(Spider):
@@ -80,6 +81,9 @@ class TrumpspiderSpider(Spider):
         return [Request(self.start_urls[0],headers=self.params,cookies=self.cookies)]#default callback will be parse function  
 
     def __init__(self, profileName, since, until):
+        #setting of database name and collection
+        
+        #init other class properties
         self.profileName = profileName
         self.since = since
         self.until = until
