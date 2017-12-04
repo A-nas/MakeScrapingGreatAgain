@@ -69,10 +69,10 @@ ITEM_PIPELINES = {
     'makeScrapingGreatAgain.pipelines.MongoDBPipeline': 300,
 }
 # SOME SETTING ADDED BY ME
-MONGODB_SERVER = 'localhost'
+MONGODB_SERVER = 'localhost' # basicly 127.0.0.1
 MONGODB_PORT = 27017
 MONGODB_DB = 'paperman'#'paperman'
-MONGODB_COLLECTION ='yay' #'course'
+MONGODB_COLLECTION ='' #'course'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
