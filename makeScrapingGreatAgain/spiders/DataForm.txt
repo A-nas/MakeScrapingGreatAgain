@@ -1,0 +1,1 @@
+{"version":"1","message_type":"104","message_id":"18","body":"[{'message_type':'104','chat_message':{'mssg':'HelloThere!','message_type':'1','uid':'1537220104538','from_person_id':'513426692','to_person_id':'309354356','read':'false'}}]","is_background":"false"}
