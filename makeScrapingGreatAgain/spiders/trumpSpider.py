@@ -5,10 +5,13 @@ from scrapy import FormRequest
 from scrapy import Selector
 from scrapy.http import Request # for yelding a request
 from time import sleep
-from urllib import urlencode
+from urllib.parse import urlencode
 import logging
 import json
-from scrapy.conf import settings
+
+#from scrapy.conf import settings
+from scrapy.utils.project import get_project_settings
+settings = get_project_settings()
 
 #selector must be exported to config files
 class TrumpspiderSpider(Spider):
@@ -93,10 +96,10 @@ class TrumpspiderSpider(Spider):
         'q':self.query
         }
         #overrided
-        self.allowed_domains = ['https://twitter.com/'+self.profileName]
+        ##self.allowed_domains = ['https://twitter.com/'+self.profileName] ACCEPT ONLY DOMAINS NOT URL
         #self.tweetAPIGetParams = ['https://twitter.com/i/profiles/show/'+self.profileName+'/timeline/tweets'] OLD
         self.tweetAPIGetParams = ['https://twitter.com/i/search/timeline']
-    	self.start_urls = ['https://twitter.com/search?'+urlencode(self.start_urlsGetParams)] 	
+        self.start_urls = ['https://twitter.com/search?'+urlencode(self.start_urlsGetParams)]
 
     def parse(self, response):
         yield Request(response.url, callback=self.parse_data,dont_filter=True, headers=self.params)

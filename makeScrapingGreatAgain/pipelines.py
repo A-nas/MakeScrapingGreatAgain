@@ -6,7 +6,10 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from pymongo import MongoClient
-from scrapy.conf import settings
+#from scrapy.conf import settings
+from scrapy.utils.project import get_project_settings
+settings = get_project_settings()
+
 
 #class MakescrapinggreatagainPipeline(object):
 #    def process_item(self, item, spider):
