@@ -29,7 +29,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
         'content-type':'application/x-www-form-urlencoded',
         'Accept':'*/*',
         'Accept-Language':'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-        'accept-encoding': 'gzip, deflate, br'
+        ##'accept-encoding': 'gzip, deflate, br'
         }
         #careful with session auth, may be expired
         self.cookies = {
