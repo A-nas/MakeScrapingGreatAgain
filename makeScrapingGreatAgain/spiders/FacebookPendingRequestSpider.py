@@ -29,19 +29,19 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
         'content-type':'application/x-www-form-urlencoded',
         'Accept':'*/*',
         'Accept-Language':'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-        'accept-encoding': 'br'
+        'Accept-encoding': 'identity' #careful with this
         }
         #careful with session auth, may be expired
         self.cookies = {
-        'datr':'FodeXdJu6iOTnr_-qX5dvkKc',
-        'sb':'IodeXdO2zjSiVe6onpYrrvmI',
+        #'datr':'FodeXdJu6iOTnr_-qX5dvkKc',
+        #'sb':'IodeXdO2zjSiVe6onpYrrvmI',
         'c_user':'100000946033663',
-        'dpr':'1.100000023841858',
-        'spin':'r.1002918994_b.trunk_t.1604387633_s.1_v.2_',
-        'xs':'31%3AWg8itQHvPhOhbA%3A2%3A1602545394%3A12670%3A6976%3A%3AAcU0MyFulAlAlb4XoRCseVcC0YAIT3qgqtS047WpxjZx', 
-        'fr':'20RlVxEc3CUg0oHJo.AWVTdHtRde75b-q9WHDjMScfgcI.BdXoci.6Y.F-M.0.0.BfogoT.AWVJwXVeFOI',
-        'wd':'1165x661',
-        'presence':'C%7B%22t3%22%3A%5B%7B%22i%22%3A%22u.100013589642648%22%7D%2C%7B%22i%22%3A%22u.100002123225278%22%7D%2C%7B%22i%22%3A%22u.1431583426%22%7D%2C%7B%22i%22%3A%22u.100014284686565%22%7D%2C%7B%22i%22%3A%22u.100001515357200%22%7D%2C%7B%22i%22%3A%22u.100004078822829%22%7D%2C%7B%22i%22%3A%22u.100007372480026%22%7D%2C%7B%22i%22%3A%22u.100009481263870%22%7D%2C%7B%22i%22%3A%22u.100002336901919%22%7D%2C%7B%22i%22%3A%22u.1190418754%22%7D%2C%7B%22i%22%3A%22u.100014817197562%22%7D%2C%7B%22i%22%3A%22u.100056090225976%22%7D%2C%7B%22i%22%3A%22u.100002359090644%22%7D%2C%7B%22i%22%3A%22u.100001442425862%22%7D%2C%7B%22i%22%3A%22u.1183870551%22%7D%2C%7B%22i%22%3A%22u.100006782493370%22%7D%5D%2C%22utc3%22%3A1604548008408%2C%22v%22%3A1%7D'
+        #'dpr':'1.100000023841858',
+        #'spin':'r.1002918994_b.trunk_t.1604387633_s.1_v.2_',
+        'xs':'31%3AcEuMVVBic1Uhmw%3A2%3A1604622585%3A12670%3A6976' #SESSION_ID
+        #'fr':'20RlVxEc3CUg0oHJo.AWUxTYh-8b25I3BXclZYmdu1whY.BdXoci.6Y.F-M.0.0.BfpJj4.AWWiYA1R9Ow',
+        #'wd':'1165x661',
+        #'presence':'C%7B%22t3%22%3A%5B%7B%22i%22%3A%22u.100001442425862%22%7D%2C%7B%22i%22%3A%22u.1054836789%22%7D%2C%7B%22i%22%3A%22u.100008285210460%22%7D%2C%7B%22i%22%3A%22u.100000154096535%22%7D%2C%7B%22i%22%3A%22u.100002359090644%22%7D%2C%7B%22i%22%3A%22u.100004078822829%22%7D%2C%7B%22i%22%3A%22u.100006782493370%22%7D%2C%7B%22i%22%3A%22u.100006018966435%22%7D%2C%7B%22i%22%3A%22u.100013589642648%22%7D%2C%7B%22i%22%3A%22u.100002123225278%22%7D%2C%7B%22i%22%3A%22u.1431583426%22%7D%2C%7B%22i%22%3A%22u.100014284686565%22%7D%2C%7B%22i%22%3A%22u.100001515357200%22%7D%2C%7B%22i%22%3A%22u.100007372480026%22%7D%2C%7B%22i%22%3A%22u.100009481263870%22%7D%2C%7B%22i%22%3A%22u.100002336901919%22%7D%2C%7B%22i%22%3A%22u.1190418754%22%7D%2C%7B%22i%22%3A%22u.100014817197562%22%7D%2C%7B%22i%22%3A%22u.100056090225976%22%7D%2C%7B%22i%22%3A%22u.1183870551%22%7D%5D%2C%22utc3%22%3A1604622726632%2C%22v%22%3A1%7D'
         }
         #form data to send via POST
         self.data = {
@@ -80,7 +80,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
 
     def __init__(self):
         #overrided
-        self.allowed_domains = ['https://twitter.com/']
+        self.allowed_domains = ['facebook.com']
         self.start_urls = ['https://www.facebook.com/api/graphql/']
 
 
