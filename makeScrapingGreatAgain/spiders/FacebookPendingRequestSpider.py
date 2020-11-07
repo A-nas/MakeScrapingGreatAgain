@@ -25,7 +25,6 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
         self.cookies = json.loads(configSection['Cookies'])
             #form data to send via POST
         self.data = json.loads(configSection['Datas'])
-        self.data.update({'variables':'{"count":1000,"cursor":"502492655","scale":1.5}'})
 
 
         return [FormRequest(self.start_urls[0],
@@ -42,9 +41,34 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        #logging.DEBUG()
-        #logging.warning(response.text)
-        yield {
-             'JSON' : response.text
+        keepScroll = None
+        #parse json
+        apiResponse = json.loads(response.text)
+        #iterate on json and yield datas (list of 10)
+        for key,value in enumerate(apiResponse['data']
+        ['viewer']
+        ['outgoing_friend_requests_connection']
+        ['edges']):
+            yield {
+             'id' : value['node']['id'],
+             'url' : value['node']['url'],
+             'name' : value['node']['name']
             }
-        pass
+        #get stop iterator
+        keepScroll = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['has_next_page']
+
+        #if its done (json flag) retun
+        if (keepScroll == False):
+            return
+    #get the last cursor position #else yield request with next position (update form data only and post)
+        nextCursor = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['end_cursor']
+        self.data.update({'variables':'{"count":10,"cursor":"'+nextCursor+'","scale":1.5}'})
+        yield FormRequest(self.start_urls[0],
+                           headers=self.params,
+                           method='POST',
+                           formdata=self.data,
+                           cookies=self.cookies)
+    
+
+    def close(self, reason):
+        print("spider closed for ", reason)
