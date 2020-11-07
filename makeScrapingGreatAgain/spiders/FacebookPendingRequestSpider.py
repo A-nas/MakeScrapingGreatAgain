@@ -54,6 +54,12 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
              'url' : value['node']['url'],
              'name' : value['node']['name']
             }
+            self.data.update({'variables':'{"input":{"cancelled_friend_requestee_id":"'+value['node']['id']+'","source":"manage_outgoing_requests","actor_id":"100000946033663","client_mutation_id":"4"},"scale":1.5}'})
+            yield FormRequest(self.start_urls[0],
+                           headers=self.params,
+                           method='POST',
+                           formdata=self.data,
+                           cookies=self.cookies)
         #get stop iterator
         keepScroll = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['has_next_page']
 
