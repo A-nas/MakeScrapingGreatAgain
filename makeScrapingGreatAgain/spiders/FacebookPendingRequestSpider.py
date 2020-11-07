@@ -25,7 +25,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
         self.cookies = json.loads(configSection['Cookies'])
             #form data to send via POST
         self.data = json.loads(configSection['Datas'])
-        self.data.update({'variables':{'count':10,'cursor':'636816498','scale':1.5}})
+        self.data.update({'variables':'{"count":10,"cursor":"636816498","scale":1.5}'})
         print(self.data)
         dt = {
             'av':'100000946033663',
