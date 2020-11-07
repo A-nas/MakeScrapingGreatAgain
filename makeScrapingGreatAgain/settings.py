@@ -66,7 +66,7 @@ DOWNLOAD_DELAY = 3
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     #'makeScrapingGreatAgain.pipelines.MakescrapinggreatagainPipeline': 300,
-    'makeScrapingGreatAgain.pipelines.MongoDBPipeline': 300,
+    #'makeScrapingGreatAgain.pipelines.MongoDBPipeline': 300,
 }
 # SOME SETTING ADDED BY ME
 MONGODB_SERVER = 'localhost' # basicly 127.0.0.1
