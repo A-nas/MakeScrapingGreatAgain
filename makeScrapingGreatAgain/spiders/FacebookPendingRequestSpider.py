@@ -43,7 +43,6 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
     def parse(self, response):
         keepScroll = None
         #parse json
-        print(response.text)
         apiResponse = json.loads(response.text)
         #iterate on json and yield datas (list of 10)
         for key,value in enumerate(apiResponse['data']
@@ -55,11 +54,10 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
              'url' : value['node']['url'],
              'name' : value['node']['name']
             }
-            # unfriendDatas = self.data
-            # unfriendDatas.update({'variables':'{"input":{"cancelled_friend_requestee_id":"'+value['node']['id']+'","source":"manage_outgoing_requests","actor_id":"100000946033663","client_mutation_id":"4"},"scale":1.5}'})
-            # # unfriendDatas.update({'__req':'20'})
-            # unfriendDatas.update({'doc_id':'3226051994092510'}) #important (type of request)
-            # requests.post(self.start_urls[0],headers=self.params,data=unfriendDatas,cookies=self.cookies)
+            unfriendDatas = self.data
+            unfriendDatas.update({'variables':'{"input":{"cancelled_friend_requestee_id":"'+value['node']['id']+'","source":"manage_outgoing_requests","actor_id":"100000946033663","client_mutation_id":"4"},"scale":1.5}'})
+            unfriendDatas.update({'doc_id':'3226051994092510'}) #important (type of request)
+            requests.post(self.start_urls[0],headers=self.params,data=unfriendDatas,cookies=self.cookies)
         #get stop iterator
         keepScroll = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['has_next_page']
 
