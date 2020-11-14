@@ -18,3 +18,7 @@ htmlcov/
 # Windows
 Thumbs.db
 body.html
+
+#security
+out.csv
+masterData.ini

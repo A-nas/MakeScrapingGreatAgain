@@ -43,7 +43,11 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
     def parse(self, response):
         keepScroll = None
         #parse json
-        apiResponse = json.loads(response.text)
+        apiResponse = None
+        try:
+            apiResponse = json.loads(response.text)
+        except ValueError:
+            print(response.text)
         #iterate on json and yield datas (list of 10)
         for key,value in enumerate(apiResponse['data']
         ['viewer']
@@ -60,7 +64,6 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
             # requests.post(self.start_urls[0],headers=self.params,data=unfriendDatas,cookies=self.cookies)
         #get stop iterator
         keepScroll = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['has_next_page']
-
         #if its done (json flag) retun
         if (keepScroll == False):
             return
