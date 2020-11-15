@@ -11,10 +11,14 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
     name = 'FacebookPendingRequestSpider'
     allowed_domains = ['facebook.com']
     start_urls = ['http://facebook.com/']
+    
 
     params = None
     cookies = None
     data = None
+    #login_url = 'https://www.facebook.com/login/'
+    user = None
+    pwd = None
 
     def start_requests(self):
         #Get manual config
@@ -27,17 +31,30 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
             #form data to send via POST
         self.data = json.loads(configSection['Datas'])
 
+
+        # #LOGIN AFTER START ANY REQUEST
+        # logged = None
+        # logged = FormRequest(self.start_urls[1],
+        #             method='POST',
+        #             formdata={'email': self.user, 'pass': self.pwd},
+        #             callback = self.after_login)
+
         return [FormRequest(self.start_urls[0],
-                            headers=self.params,
-                            method='POST',
-                            formdata=self.data,
-                            cookies=self.cookies)]#default callback will be parse function  
+                                headers=self.params,
+                                method='POST',
+                                formdata=self.data,
+                                cookies=self.cookies)]#default callback will be parse function
 
 
-    def __init__(self):
+    def __init__(self, user, pwd):
         #overrided
         self.allowed_domains = ['facebook.com']
-        self.start_urls = ['https://www.facebook.com/api/graphql/']
+        self.start_urls = ['https://www.facebook.com/api/graphql/','https://www.facebook.com/login/']
+        self.user = user
+        self.pwd = pwd
+
+
+        
 
 
     def parse(self, response):
@@ -75,3 +92,6 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
 
     def close(self, reason):
         print("spider closed for ", reason)
+
+    def after_login(self, response):
+        print("============================> login callback "+response.url)
