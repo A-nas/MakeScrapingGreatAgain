@@ -6,7 +6,7 @@ from scrapy.http import FormRequest
 import json
 from configparser import ConfigParser
 
-
+#scrapy crawl FacebookPendingRequestSpider -a user="" -a pwd="" -a datr=""
 class FacebookpendingrequestspiderSpider(scrapy.Spider):
     name = 'FacebookPendingRequestSpider'
     allowed_domains = ['facebook.com']
