@@ -19,17 +19,15 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
     user = None
     pwd = None
     _datr = None
-    userid = None
 
 
-    def __init__(self, user, pwd, datr, userid):
+    def __init__(self, user, pwd, datr):
         #INSTRUCTOR
         self.allowed_domains = ['facebook.com']
         self.start_urls = ['https://www.facebook.com/api/graphql/','https://www.facebook.com/login/']
         self.user = user
         self.pwd = pwd
         self._datr = datr
-        self.userid = userid
 
 
     
@@ -59,8 +57,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
         config.read('masterData.ini')
         configSection = config['FACEBOOK']
         #Fill data
-        self.params = json.loads(configSection['Headers'])
-        self.cookies = cookies#json.loads(configSection['Cookies'])
+        self.cookies = cookies
             #form data to send via POST
         self.data = json.loads(configSection['Datas'])
         return [FormRequest(self.start_urls[0],
