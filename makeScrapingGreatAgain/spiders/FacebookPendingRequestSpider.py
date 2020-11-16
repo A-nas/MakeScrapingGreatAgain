@@ -16,19 +16,32 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
     params = None
     cookies = None
     data = None
-    #login_url = 'https://www.facebook.com/login/'
     user = None
     pwd = None
     _datr = None
+    userid = None
 
+
+    def __init__(self, user, pwd, datr, userid):
+        #INSTRUCTOR
+        self.allowed_domains = ['facebook.com']
+        self.start_urls = ['https://www.facebook.com/api/graphql/','https://www.facebook.com/login/']
+        self.user = user
+        self.pwd = pwd
+        self._datr = datr
+        self.userid = userid
+
+
+    
     def start_requests(self):
-        #LOGIN AFTER START ANY REQUEST
+        #GET HIDEN INPUT DATA FROM LOGIN FORM
         return [FormRequest(self.start_urls[1],
                     method='GET',
                     cookies = {'datr':self._datr},
                     callback = self.extract_cookies)]
 
     def extract_cookies(self, response):
+        #PARSING HIDEN DATA REQUIRED TO SEND A LOGIN REQUEST
         lsd = response.xpath('//*[@name="lsd"]/@value').extract_first()
         return [FormRequest(self.start_urls[1],
                     method='POST',
@@ -37,33 +50,21 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
                     meta = {'cookiejar': 1, 'dont_redirect': True,'handle_httpstatus_list': [302]},
                     callback = self.after_login)]
 
-
-    def __init__(self, user, pwd, datr):
-        #overrided
-        self.allowed_domains = ['facebook.com']
-        self.start_urls = ['https://www.facebook.com/api/graphql/','https://www.facebook.com/login/']
-        self.user = user
-        self.pwd = pwd
-        self._datr = datr
-
     def after_login(self, response):
-        #check login
-        #print(response.text.encode())
-        print(response.headers)
-        print(response.url)
-        return
-
+        cookies = {}
+        for item in response.headers.getlist('Set-Cookie'):
+            cookies.update(self.parse_cookies(item.decode(),'; ', '='))
         #Get manual config
         config = ConfigParser(interpolation=None)
         config.read('masterData.ini')
         configSection = config['FACEBOOK']
         #Fill data
         self.params = json.loads(configSection['Headers'])
-        self.cookies = json.loads(configSection['Cookies'])
+        self.cookies = cookies#json.loads(configSection['Cookies'])
             #form data to send via POST
         self.data = json.loads(configSection['Datas'])
         return [FormRequest(self.start_urls[0],
-                            headers=self.params,
+                            #headers=self.params,
                             method='POST',
                             formdata=self.data,
                             cookies=self.cookies,
@@ -106,3 +107,15 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
 
     def close(self, reason):
         print("spider closed for ", reason)
+
+    def parse_cookies(self, raw_cookies, delimiter, equaloperator):
+        cookies = {}
+        for cookie in raw_cookies.split(delimiter):
+            try:
+                key = cookie.split(equaloperator)[0]
+                val = cookie.split(equaloperator)[1]
+                cookies[key] = val
+            except:
+                pass
+            break
+        return cookies
