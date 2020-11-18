@@ -45,7 +45,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
                     method='POST',
                     formdata={'email': self.user, 'pass': self.pwd, 'lsd': lsd},
                     cookies = {'datr':self._datr},
-                    meta = {'cookiejar': 1, 'dont_redirect': True,'handle_httpstatus_list': [302]},
+                    meta = {'dont_redirect': True,'handle_httpstatus_list': [302]},
                     callback = self.after_login)]
 
     def after_login(self, response):
@@ -87,6 +87,8 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
              'url' : value['node']['url'],
              'name' : value['node']['name']
             }
+            #CANCEL FRIEND REQUEST
+
         #get stop iterator
         keepScroll = apiResponse['data']['viewer']['outgoing_friend_requests_connection']['page_info']['has_next_page']
         #if its done (json flag) retun
