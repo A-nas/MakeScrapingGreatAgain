@@ -49,6 +49,7 @@ class FacebookpendingrequestspiderSpider(scrapy.Spider):
                     callback = self.after_login)]
 
     def after_login(self, response):
+        print(response.headers)
         cookies = {}
         for item in response.headers.getlist('Set-Cookie'):
             cookies.update(self.parse_cookies(item.decode(),'; ', '='))
